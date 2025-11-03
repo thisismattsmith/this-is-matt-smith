@@ -1,0 +1,13 @@
+---
+import FormattedDate from "@components/misc/formatted-date.astro";
+
+const { title, description, slug } = Astro.props;
+---
+<a href={`/work/${slug}`} class="block">
+    <article class="flex flex-col items-start gap-1 w-full border border-gray-200 dark:border-neutral-900 rounded-lg p-4 bg-white dark:bg-neutral-900 transition-transform duration-200 ease-in-out transform hover:rotate-1 hover:border-black dark:hover:border-white hover:shadow-md">
+        <h3 class="text-base font-medium w-full sm:text-xl md:text-2xl">{title}</h3>
+        <p class="text-gray-500 font-medium mt-1">
+            {description}
+        </p>
+    </article>
+</a>

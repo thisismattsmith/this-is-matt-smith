@@ -1,0 +1,65 @@
+---
+import { WorkItem } from '@components/cards';
+import { Header } from '@components/misc';
+import { BaseHead } from '@components/seo';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@data/index';
+import { getCollection } from 'astro:content';
+import RootLayout from '@layouts/root-layout.astro';
+
+const work = (await getCollection('work')
+	
+);
+---
+
+<!doctype html>
+<html lang='en'>
+	<head>
+		<BaseHead
+			title={SITE_TITLE}
+			description={SITE_DESCRIPTION}
+			image='/images/ogimage.png'
+		/>
+	</head>
+	<RootLayout>
+		<div
+			id='Header+title'
+			class='flex flex-col w-full gap-6 max-w-xl'>
+			<Header />
+			<h1 class='w-full text-7xl font-medium tracking-tight'>work</h1>
+			<div
+				id='working-with-me'
+				class='flex flex-col gap-4'>
+					<p class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>I design learning experiences, strategies, and systems that help people and organisations grow over time.</p>
+					<p class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>Here are some examples of what I do:</p>
+				</div>
+			{
+				work.map((work) => (
+					<WorkItem
+						title={work.data.title}
+						date={work.data.pubDate}
+						slug={work.slug}
+						description={work.data.description}
+					/>
+				))
+			}
+			<div
+				id='working-with-me'
+				class='flex flex-col gap-4'>
+					<p class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>If you already have a sense that I might be able to help, you can 
+						<a
+						href='mailto:hello@thisismattsmith.com'
+						class='underline underline-offset-2'>
+						email</a> or 
+					<a
+						href='https://cal.com/mattsmith/intro'
+						class='underline underline-offset-2'>
+						schedule a call</a> with me.</p>
+					<p class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>Some of my favourite projects have started with an email that said something like "Hey Matt, I'm not sure if you do this but I have a problem with..." and we've shaped the work together.</p>
+					
+				</div>
+			<br />
+			<br />
+		</div>
+		
+	</RootLayout>
+</html>

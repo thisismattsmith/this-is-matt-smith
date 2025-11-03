@@ -1,0 +1,24 @@
+---
+/**
+ * Props:
+ *  - date: string | Date | undefined
+ */
+const { date } = Astro.props;
+
+/** Normalize to a valid Date or null */
+let parsed = null;
+if (date) {
+  parsed = date instanceof Date ? date : new Date(date);
+  if (isNaN(parsed.getTime())) parsed = null;
+}
+
+/** Display string for valid date */
+const display = parsed
+  ? new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(parsed)
+  : null;
+---
+{parsed ? (
+  <time datetime={parsed.toISOString()}>{display}</time>
+) : (
+  <span class="date-unknown">Unknown date</span>
+)}

@@ -1,14 +1,30 @@
 {
-  "name": "personalsite",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^5.15.2"
-  }
+	"name": "thisismattsmith.com",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "astro dev",
+		"start": "astro dev",
+		"build": "astro check && astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"check": "biome check ./src",
+		"lint": "biome lint ./src",
+		"format": "biome format --write ."
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.5.10",
+		"@astrojs/cloudflare": "^12.6.10",
+		"@astrojs/mdx": "^4.3.9",
+		"@astrojs/rss": "^4.0.12",
+		"@astrojs/sitemap": "^3.5.1",
+		"@astrojs/tailwind": "^5.1.5",
+		"astro": "^5.15.2",
+		"tailwindcss": "^3.4.17",
+		"typescript": "^5.9.2"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.7.2",
+		"@tailwindcss/typography": "^0.5.16"
+	}
 }

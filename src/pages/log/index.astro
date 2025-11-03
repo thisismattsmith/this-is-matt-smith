@@ -1,0 +1,65 @@
+---
+import { LogItem } from "@components/cards";
+import Headers from "@components/misc/headers.astro";
+import { BaseHead } from "@components/seo";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@data/index";
+import { groupLogByYearMonthSorted, type Log } from "@utils/index";
+import RootLayout from "@layouts/root-layout.astro";
+
+const groupedLog = await groupLogByYearMonthSorted();
+---
+
+<!doctype html>
+<html lang='en'>
+	<head>
+		<BaseHead
+			title={SITE_TITLE}
+			description={SITE_DESCRIPTION}
+			image='/images/ogimage.png'
+		/>
+	</head>
+	<RootLayout>
+		<div
+			id='navbar+title'
+			class='flex flex-col w-full gap-6 max-w-xl'>
+			<Headers />
+			<h1 class='w-full text-7xl font-medium tracking-tight mb-6'>log</h1>
+			<div
+				id='grouped-log'
+				class='grid grid-cols-10 gap-3'>
+				{
+					Object.entries(groupedLog).map(([yearMonth, log]) => {
+						const [year, month] = yearMonth.split('-');
+						const date = new Date(Number(year), Number(month) - 1);
+						const monthName = date.toLocaleString('default', { month: 'long' });
+						const logCount = log.length;
+						return (
+							<div class='col-span-10 mb-6'>
+								<div class='flex flex-row items-center justify-between font-medium'>
+									<h2 class='text-lg tracking-tight mb-6'>
+										{monthName} {year}
+									</h2>
+									<span class='text-gray-500'>{logCount} log</span>
+								</div>
+								<div class='grid grid-cols-10 gap-3'>
+									{log.map((log: Log) => (
+										<LogItem
+											title={log.data.title}
+											date={log.data.pubDate.toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'long',
+												day: 'numeric',
+											})}
+											slug={log.slug}
+											log_count={log.data.log_count}
+										/>
+									))}
+								</div>
+							</div>
+						);
+					})
+				}
+			</div>
+		</div>
+	</RootLayout>
+</html>

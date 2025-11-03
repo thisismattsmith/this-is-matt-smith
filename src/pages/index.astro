@@ -1,16 +1,104 @@
 ---
-
+import { Header } from '@components/misc';
+import { BaseHead } from '@components/seo';
+import { SITE_TITLE } from '@data/index';
+import { SITE_DESCRIPTION, socialLinks } from '@data/index';
+import RootLayout from '@layouts/root-layout.astro';
 ---
 
-<html lang="en">
+<!doctype html>
+<html lang='en'>
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<BaseHead
+			title={SITE_TITLE}
+			description={SITE_DESCRIPTION}
+			image='/images/ogimage.png'
+		/>
 	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+
+	<RootLayout>
+		<div
+			id='navbar+title'
+			class='flex flex-col w-full gap-6 max-w-xl'>
+			<Header />
+			<h1
+				class='w-full text-start text-[min(12vw,72px)] font-medium leading-[0.9] tracking-[-2px] sm:tracking-[-4px]'>
+				matt smith
+				<br />
+				<span class='text-gray-500 dark:text-gray-400'>is growing up</span>
+			</h1>
+
+			<div
+				id='about'
+				class='flex flex-col gap-4'>
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					I'm interested in a lot of things that can be best categorised as <i>"growing up"</i>. 
+					</div>
+					<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					Stuff like learning, wisdom, skills, and how people develop over time. 
+				</div>
+
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					My <a
+						href='/work'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						work</a> also focuses on these themes. 
+						
+				</div>
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					I help organisations get better at learning through strategy and systems design. I design learning experiences and training programs, and help Learning and Development (L&D) teams get even better at what they do.
+				</div>
+
+				</div>
+
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					This is my little home on the web to write
+					<a
+						href='/writing'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						essays</a>, share some unfinished 
+						<a
+						href='/thoughts'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						thoughts</a>, 
+						<a
+						href='/log'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						log</a> my progress, and gently plug my
+						<a
+						href='/work'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						consulting work</a>.
+				</div>
+
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					Take a look around and let me know what you think. My contact details are at the bottom of the page. 
+					</div>
+				<div class='font-medium text-lg text-gray-700 dark:text-gray-300'>
+					Oh, and if you're interested in working with me, please
+					<a
+						href='https://cal.com/mattsmith/intro'
+						target='_blank'
+						class='underline underline-offset-2 text-lg font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						book time in my calender</a> for a chat. 
+				</div>
+			</div>
+			<br />
+			<br />
+			<div
+				id='social-links'
+				class='flex flex-row gap-4'>
+				{
+					socialLinks.map((link) => (
+						<a
+							href={link.url}
+							target='_blank'
+							class='text-lg font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+							{link.label}
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</RootLayout>
 </html>

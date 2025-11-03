@@ -1,0 +1,123 @@
+---
+import { Header } from '@components/misc';
+import { BaseHead } from '@components/seo';
+import { SITE_TITLE } from '@data/index';
+import { SITE_DESCRIPTION, socialLinks } from '@data/index';
+import RootLayout from '@layouts/root-layout.astro';
+---
+
+<!doctype html>
+<html lang='en'>
+	<head>
+		<BaseHead
+			title={SITE_TITLE}
+			description={SITE_DESCRIPTION}
+			image='/images/ogimage.png'
+		/>
+	</head>
+
+	<RootLayout>
+		<div
+			id='navbar+title'
+			class='flex flex-col w-full gap-6 max-w-xl'>
+			<Header />
+			<h1
+				class='w-full text-start text-[min(12vw,72px)] font-medium leading-[0.9] tracking-[-2px] sm:tracking-[-4px]'>
+				oh, hello!
+			</h1>
+
+			<div
+				id='hello-linkedin'
+				class='flex flex-col gap-4'>
+				<div class='font-medium text-lg my-3 text-gray-700 dark:text-gray-400'>
+					<p class="my-3">You must be here from LinkedIn.</p>
+					<p class="my-3">Thanks for stopping by.</p>
+					<p class="my-3">If you came here to hire me, please feel free to 
+					<a 
+						href='mailto:hello@thisismattsmith.com' 
+						class='underline underline-offset-2'>
+						email me
+					</a> or 
+					<a
+						href='https://cal.com/mattsmith/intro'
+						class='underline underline-offset-2'>
+						schedule a call
+					</a>.</p>
+					<p>If, on the other hand, you're all <i>"Woah, settle down! We just met. I came here to find out more about you first"</i> then read below.</p>
+			</div>
+			<div
+				id='what-i-do'
+				class='flex flex-col gap-4'>
+					<h3 class='w-full text-4xl my-3 font-medium tracking-tight dark:text-white'>I could</h3>
+					<div class='font-medium text-gray-700 dark:text-gray-400 text-lg'>
+						<p class="my-3"><b class='dark:text-white'>I work as an independent consultant and advisor</b>, helping organisations with learning, performance, and employee experience. The work I do varies quite a bit so here's a quick snapshot of what I could do based on the size/stage of an organisation:</p>
+						<p class="my-3"><b class='dark:text-white'>Startup:</b> working on every aspect of L&D as part of an internal L&D team, on the vendor side, running a learning agency and as an external consultant.</p>
+						<p class="my-3"><b class='dark:text-white'>Mid-size org:</b> Create and oversee an organisational learning strategy, build a new L&D team or new team capabilities, design and manage training programs, work as a "fractional" CLO/L&D Director.</p>
+						<p class="my-3"><b class='dark:text-white'>Large/Enterprise:</b>, giving me direct insight into workplace performance challenges and what managers really care about.</p>
+						<p class="my-3">I also provide services for L&D focused businesses, such as:</p>
+						<p class="my-3"><b class='dark:text-white'>Learning Design Agencies:</b> with work and roles in HR, Process Improvement, Change Management, Facilitation, eLearning, Marketing, Sales, Management and Digital Media Production roles.</p>
+						<p class="my-3"><b class='dark:text-white'>EdTech:</b> in L&D and design methods across experience, service, instructional, UX, performance and process design.</p>
+						<p class="my-3"><b class='dark:text-white'>Training/Education startups:</b> and can work with clents in any country, service, instructional, UX, performance and process design.</p>
+						</div>
+					</div>
+			</div>			
+			<div
+				id='quick-bio'
+				class='flex flex-col gap-4'>
+					<h3 class='w-full text-4xl my-3 font-medium tracking-tight dark:text-white'>here's a quick bio</h3>
+						<div class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>
+						<p><b class='dark:text-white'>I work as an independent conslitant and advisor</b>, helping organisations with learning, performance, and employee experience.</p>
+						<p class="my-3"><b class='dark:text-white'>15+ years in Learning & Development (L&D)</b> working on every aspect of L&D as part of an internal L&D team, on the vendor side, running a learning agency and as an external conslitant.</p>
+						<p class="my-3"><b class='dark:text-white'>Started an agency called Pure Learning</b> and grew it into a business that made industry leading digital learning experiences for hundreds of Australian and global organisations.</p>
+						<p class="my-3"><b class='dark:text-white'>Over 20 years experience in leadership and people management</b>, giving me direct insight into workplace performance challenges and what managers really care about.</p>
+						<p class="my-3"><b class='dark:text-white'>Broad experience </b> with work and roles in HR, Process Improvement, Change Management, Facilitation, eLearning, Marketing, Sales, Management and Digital Media Production roles.</p>
+						<p class="my-3"><b class='dark:text-white'>Deep exerptise</b> in L&D and design methods across experience, service, instructional, UX, performance and process design.</p>
+						<p class="my-3"><b class='dark:text-white'>Flily remote</b> and can work with clents in any country, service, instructional, UX, performance and process design.</p>
+						</div>
+					</div>
+			</div>
+<div
+				id='working-with-me'
+				class='flex flex-col gap-4'>
+					<h3 class='w-full my-3 text-4xl font-medium tracking-tight'>this is how we'd work together</h3>
+					<p class='font-medium text-gray-700 dark:text-gray-400 text-lg my-3'>I work remotly, which<p/>
+
+<div
+				id='working-with-me'
+				class='flex flex-col gap-4'>
+					<h3 class='w-full my-3 text-4xl font-medium tracking-tight'></h3>
+					<li class='list-disc list-inside font-medium text-gray-700 dark:text-gray-400 text-lg'>
+					<ui><b>Strategic & Tactical</b> helping organisations of all sizes with learning, performance, and employee experience.</li>
+					<li><b>Outcome focused</b> Helping</li>
+					<li><b>Started an agency called Pure Learning</b> and grew it into a business that made industry leading digital learning experiences for hundreds of Australian and global organisations.</li>
+					<li><b>Over 20 years experience in leadership roles and people management</b>, giving me direct insight into workplace performance challenges and what managers really care about.</li>
+					<li><b>Business</b></li>
+					<li><b></b></li>
+					<li><b></b></li>
+					
+								<p class="my-3">So, if you already have a sense of what I can do, I encourage you to email or 
+					<a
+						href='https://cal.com/mattsmith/intro'
+						class='underline underline-offset-2'>
+						schedule a call
+					</a> with me.</p>
+					</p>
+					<p>Most of my favourite projects have started with an email that said something like "Hey Matt, I'm not sure if you do this but I have a problem with..."</p>
+				</div>
+			<div
+				id='social-links'
+				class='flex flex-row gap-4'>
+				{
+					socialLinks.map((link) => (
+						<a
+							href={link.url}
+							target='_blank'
+							class='text-lg font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+							{link.label}
+						</a>
+					))
+				}
+			</div>
+		</div>
+	</RootLayout>
+</html>
