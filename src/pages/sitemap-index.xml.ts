@@ -17,6 +17,10 @@ export const GET: APIRoute = async () => {
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
   <sitemap>
+    <loc>${new URL("/sitemap-work.xml", import.meta.env.SITE).href}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>
+  <sitemap>
     <loc>${new URL("/sitemap-log.xml", import.meta.env.SITE).href}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
