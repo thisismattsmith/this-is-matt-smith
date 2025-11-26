@@ -36,7 +36,7 @@ export const url = "https://thisismattsmith.com";
 
 export const ogImage = {
 	src: "/images/ogimage.png",
-	alt: "The website of Matt Sith - thisismattsmith.com",
+	alt: "The website of Matt Smith - thisismattsmith.com",
 };
 
 
