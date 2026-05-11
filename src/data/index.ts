@@ -82,6 +82,10 @@ export const socialLinks = [
 		url: "https://github.com/thisismattsmith",
 	},
 	{
+		label: "reddit",
+		url: "https://www.reddit.com/user/_mattsmith",
+	},
+	{
 		label: "bluesky",
 		url: "https://bsky.app/profile/thisismattsmith.com",
 	},
