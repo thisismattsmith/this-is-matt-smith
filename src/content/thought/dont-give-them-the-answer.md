@@ -34,5 +34,4 @@ What would their more experienced neighbour say? The person who, just months bef
 
 
 <hr />
-
-Add your thoughts on the [LinkedIn post](https://www.linkedin.com/posts/thisismattsmith_dont-give-them-the-answer-before-i-got-share-7465188013195681792-YFPP).
+Add your thoughts about this on the [LinkedIn post](https://www.linkedin.com/posts/thisismattsmith_dont-give-them-the-answer-before-i-got-share-7465188013195681792-YFPP).
