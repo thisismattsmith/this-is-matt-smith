@@ -7,7 +7,6 @@ updatedDate: "May 27 2026"
 socialLink: "https://www.linkedin.com/posts/thisismattsmith_dont-give-them-the-answer-before-i-got-share-7465188013195681792-YFPP/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAaZFOsBZ8ilkFnD2PFd-dPBtU8gRJvwukA"
 ---
 
-import { SocialPostCTA } from "@components/cta";
 
 Before I got into the world of training I was in a few different management roles. One was leading a team in a call centre. There was tonnes of product and technical knowledge they had to be across. There were also regular updates, promotions and new products to think about.
 
@@ -32,10 +31,4 @@ What would their more experienced neighbour say? The person who, just months bef
 
 "Let's look it up together"
 
-
-<SocialPostCTA
-  title="Add your thoughts to this thought"
-  cta_label="Comment"
-  link={socialLink}
-  bg_colour="orange"
-/>
+Add your thoughts on the [LinkedIn post](https://www.linkedin.com/posts/thisismattsmith_dont-give-them-the-answer-before-i-got-share-7465188013195681792-YFPP).
