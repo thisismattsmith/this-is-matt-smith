@@ -14,8 +14,7 @@ The best process is one that can change when it’s needed. It needs to flex and
 
 The best process evolves. It changes over time as you learn what’s working and what isn’t. It grows with you, your team and the organisation.
 
-So there’s not one “best” process after all. 
-
+So there’s not one “best” process after all.
 
 <hr />
 Add your thoughts about this on the [LinkedIn post](https://www.linkedin.com/posts/thisismattsmith_the-best-process-the-best-process-gets-share-7464783389972303872-Dp8M/).
