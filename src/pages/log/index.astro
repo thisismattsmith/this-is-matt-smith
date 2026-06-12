@@ -1,82 +1,158 @@
 ---
-import { LogItem } from "@components/cards";
-import Headers from "@components/misc/headers.astro";
+import { Header } from "@components/misc";
 import { BaseHead } from "@components/seo";
 import { SITE_DESCRIPTION, SITE_TITLE, socialLinks } from "@data/index";
-import { groupLogByYearMonthSorted, type Log } from "@utils/index";
+import { getLogMonthSeries, intensityBucket, clsx } from "@utils/index";
 import RootLayout from "@layouts/root-layout.astro";
+import FormattedDate from "@components/misc/formatted-date.astro";
 
-const groupedLog = await groupLogByYearMonthSorted();
+// Only show months that have entries. The chart still reads chronologically
+// (most recent first) — gaps just don't take up space.
+const series = (await getLogMonthSeries()).filter((m) => m.logs.length > 0);
+
+// Intensity progression: same green as the scroll-progress / back-to-top
+// button (#29fd30), with reducing opacity for fewer entries. Bucket 4 is
+// full strength; the rest step down. Empty cells are a faint outline.
+const intensityClasses: Record<number, string> = {
+	0: "bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800",
+	1: "bg-[#29fd30]/25",
+	2: "bg-[#29fd30]/50",
+	3: "bg-[#29fd30]/75",
+	4: "bg-[#29fd30]",
+};
+
+const maxCount = Math.max(1, ...series.map((s) => s.logs.length));
 ---
 
 <!doctype html>
 <html lang='en'>
 	<head>
 		<BaseHead
-			title={SITE_TITLE}
-			description={SITE_DESCRIPTION}
+			title={`Log — ${SITE_TITLE}`}
+			description='A running log of things I have shipped, written, and changed.'
 			image='/images/ogimage.png'
 		/>
 	</head>
-	<RootLayout>
+	<body>
+		<RootLayout>
 		<div
 			id='navbar+title'
 			class='flex flex-col w-full gap-6 max-w-xl'>
-			<Headers />
-			<h1 class='w-full text-7xl font-medium tracking-tight mb-6'>log</h1>
-			<div
-				id='grouped-log'
-				class='grid grid-cols-10 gap-3'>
-				{
-					Object.entries(groupedLog).map(([yearMonth, log]) => {
-						const [year, month] = yearMonth.split('-');
-						const date = new Date(Number(year), Number(month) - 1);
-						const monthName = date.toLocaleString('default', { month: 'long' });
-						const logCount = log.length;
-						return (
-							<div class='col-span-10 mb-6'>
-								<div class='flex flex-row items-center justify-between font-medium'>
-									<h2 class='text-lg tracking-tight mb-6'>
-										{monthName} {year}
-									</h2>
-									<span class='text-gray-500'>{logCount} log</span>
-								</div>
-								<div class='grid grid-cols-10 gap-3'>
-									{log.map((log: Log) => (
-										<LogItem
-											title={log.data.title}
-											date={log.data.pubDate.toLocaleDateString('en-US', {
-												year: 'numeric',
-												month: 'long',
-												day: 'numeric',
-											})}
-											slug={log.slug}
-											log_count={log.data.log_count}
-										/>
-									))}
-								</div>
-								
-							</div>
-							
-						);
-					})
-				}
+			<Header />
+			<h1 class='w-full text-7xl font-medium tracking-tight'>log</h1>
+			<p class='font-medium text-gray-700 dark:text-gray-400 text-lg -mt-3'>
+				A running log. Most recent on top. Click a month to expand.
+			</p>
+
+			<!-- Legend -->
+			<div class='flex flex-row items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400'>
+				<span>Less</span>
+				<span class={clsx('inline-block size-3 rounded-sm', intensityClasses[0])}></span>
+				<span class={clsx('inline-block size-3 rounded-sm', intensityClasses[1])}></span>
+				<span class={clsx('inline-block size-3 rounded-sm', intensityClasses[2])}></span>
+				<span class={clsx('inline-block size-3 rounded-sm', intensityClasses[3])}></span>
+				<span class={clsx('inline-block size-3 rounded-sm', intensityClasses[4])}></span>
+				<span>More</span>
 			</div>
-		</div>
-		<br />
-		<div
+
+			<ol id='log-months' class='flex flex-col w-full divide-y divide-gray-200 dark:divide-neutral-800'>
+				{series.map(({ key, year, month, logs }) => {
+					const date = new Date(year, month - 1);
+					const monthName = date.toLocaleString('default', { month: 'long' });
+					const count = logs.length;
+					const bucket = intensityBucket(count);
+					return (
+						<li>
+							<details class='group py-3' data-month={key}>
+								<summary class='list-none cursor-pointer flex flex-row items-center gap-4'>
+									<!-- Intensity cell -->
+									<span
+										aria-hidden='true'
+										class={clsx(
+											'inline-block size-6 rounded-sm flex-shrink-0',
+											intensityClasses[bucket]
+										)}>
+									</span>
+									<!-- Month label -->
+									<span class='font-medium text-gray-900 dark:text-gray-100 w-32'>
+										{monthName} {year}
+									</span>
+									<!-- Bar (visual count, capped) -->
+									<span
+										class='flex-1 h-2 bg-gray-100 dark:bg-neutral-900 rounded-full overflow-hidden'
+										aria-hidden='true'>
+										<span
+											class={clsx(
+												'block h-full',
+												count > 0 ? intensityClasses[Math.max(bucket, 1)] : ''
+											)}
+											style={`width: ${(count / maxCount) * 100}%;`}>
+										</span>
+									</span>
+									<!-- Count -->
+									<span class='text-sm font-medium text-gray-500 dark:text-gray-500 w-10 text-right'>
+										{count === 0 ? '—' : `${count}`}
+									</span>
+									<!-- Chevron (rotates 90deg when the <details> is open) -->
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='14' height='14' viewBox='0 0 24 24'
+										fill='none' stroke='currentColor' stroke-width='2'
+										stroke-linecap='round' stroke-linejoin='round'
+										class='text-gray-400 dark:text-gray-600 flex-shrink-0 transition-transform group-open:rotate-90'
+										aria-hidden='true'>
+										<path d='m9 18 6-6-6-6'></path>
+									</svg>
+								</summary>
+								{count > 0 && (
+									<ul class='mt-3 ml-10 flex flex-col gap-2'>
+										{logs.map((log) => {
+											// Auto-generated entries point to the writing post directly;
+											// real log entries point to their own /log/<slug> page.
+											const href = log.slug.startsWith("__writing/")
+												? `/writing/${log.slug.replace("__writing/", "")}`
+												: `/log/${log.slug}`;
+											return (
+												<li>
+													<a
+														href={href}
+														class='block group/item rounded-md p-3 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors'>
+														<div class='flex flex-row items-baseline gap-2 text-xs text-gray-500 dark:text-gray-500'>
+															<FormattedDate date={log.data.pubDate} />
+														</div>
+														<h3 class='font-medium text-gray-900 dark:text-gray-100 group-hover/item:underline underline-offset-2'>
+															{log.data.title}
+														</h3>
+														<p class='text-sm text-gray-600 dark:text-gray-400'>
+															{log.data.description}
+														</p>
+													</a>
+											</li>
+										);})}
+									</ul>
+								)}
+							</details>
+						</li>
+					);
+				})}
+			</ol>
+
+			<div
 				id='social-links'
-				class='flex flex-row gap-4'>
+				class='flex flex-row gap-4 mt-6'>
 				{
 					socialLinks.map((link) => (
 						<a
 							href={link.url}
 							target='_blank'
+							rel='noopener noreferrer'
 							class='text-lg font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
 							{link.label}
 						</a>
 					))
 				}
 			</div>
+		</div>
 	</RootLayout>
+	</body>
 </html>

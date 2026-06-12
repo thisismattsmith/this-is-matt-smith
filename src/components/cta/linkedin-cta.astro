@@ -1,0 +1,31 @@
+---
+// CTA at the bottom of a thought post inviting readers to continue the
+// conversation on LinkedIn. Returns nothing if no link is provided, so
+// the layout can include this unconditionally.
+//
+// The visual separators (horizontal rules) above and below are owned
+// by the layout — this component lays out only its own content so we
+// don't end up with double-borders when the layout adds <hr>s around it.
+
+interface Props {
+	href?: string | null;
+}
+
+const { href } = Astro.props;
+---
+
+{href && (
+	<div class='not-prose w-full flex flex-col gap-3 items-start'>
+		<p class='text-sm font-medium text-gray-500 dark:text-gray-400'>
+			keep the conversation going
+		</p>
+		<a
+			href={href}
+			target='_blank'
+			rel='noopener noreferrer'
+			data-umami-event='thought-linkedin-cta'
+			class='inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border border-gray-300 dark:border-neutral-700 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-transform duration-200 ease-in-out transform hover:rotate-1'>
+			Share your thoughts on LinkedIn →
+		</a>
+	</div>
+)}

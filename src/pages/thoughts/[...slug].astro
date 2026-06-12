@@ -5,14 +5,17 @@ import { ScrollProgress } from '@components/misc';
 import { getReadingTime } from '@utils/index';
 import ExternalLink from "../../components/misc/ExternalLink.astro";
 
-const posts = await getCollection('thought');
-type Props = CollectionEntry<'thought'>;
+export async function getStaticPaths() {
+	const posts = await getCollection('thought');
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
 
-const { slug } = Astro.params;
-const post = posts.find((page) => page.slug === slug);
+type Props = { post: CollectionEntry<'thought'> };
 
-if (!post) return Astro.redirect('/404');
-
+const { post } = Astro.props;
 const readingTime = getReadingTime(post.body);
 const { Content } = await post.render();
 ---

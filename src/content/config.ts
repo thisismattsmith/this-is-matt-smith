@@ -1,26 +1,26 @@
 import { defineCollection, z } from "astro:content";
 
-const whoami = defineCollection({
-	type: "content",
-	// Type-check frontmatter using a schema
-	schema: z.object({
-		title: z.string(),
-		description: z.string(),
-		// Transform string to Date object
-		pubDate: z.coerce.date(),
-		updatedDate: z.coerce.date().optional(),
-		heroImage: z.string().optional(),
-		readingTime: z.number().optional(),
-	}),
-});
+// Writing categories — keep this list as the single source of truth.
+// The slug is what appears in the URL (?category=personal); the label is what's shown.
+export const WRITING_CATEGORIES = [
+	{ slug: "personal", label: "Personal" },
+	{ slug: "growing-up", label: "Growing Up" },
+	{ slug: "learning-at-work", label: "Learning at Work" },
+] as const;
+
+export type WritingCategorySlug = (typeof WRITING_CATEGORIES)[number]["slug"];
+
+const writingCategorySlugs = WRITING_CATEGORIES.map((c) => c.slug) as [
+	WritingCategorySlug,
+	...WritingCategorySlug[],
+];
 
 const writing = defineCollection({
 	type: "content",
-	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
 		description: z.string(),
-		// Transform string to Date object
+		category: z.enum(writingCategorySlugs),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		heroImage: z.string().optional(),
@@ -30,13 +30,14 @@ const writing = defineCollection({
 
 const thought = defineCollection({
 	type: "content",
-	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
 		description: z.string(),
 		category: z.string(),
 		showTldr: z.boolean().optional(),
-		// Transform string to Date object
+		// Link to the matching LinkedIn post. When present, the thought page
+		// renders a CTA inviting the reader to comment over on LinkedIn.
+		linkedinLink: z.string().url().optional(),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		readingTime: z.number().optional(),
@@ -45,11 +46,10 @@ const thought = defineCollection({
 
 const work = defineCollection({
 	type: "content",
-	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
 		description: z.string(),
-		category: z.string().optional(), // <- made optional
+		category: z.string().optional(),
 		showTldr: z.boolean().optional(),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
@@ -59,17 +59,18 @@ const work = defineCollection({
 
 const log = defineCollection({
 	type: "content",
-	// Type-check frontmatter using a schema
 	schema: z.object({
 		title: z.string(),
 		description: z.string(),
 		log_count: z.number(),
 		category: z.string(),
-		// Transform string to Date object
+		// If set, this log entry replaces the auto-generated "published X" entry
+		// for the matching writing post. Use the writing post's slug.
+		writingSlug: z.string().optional(),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
 		readingTime: z.number().optional(),
 	}),
 });
 
-export const collections = { writing, thought, work, log, whoami };
+export const collections = { writing, thought, work, log };

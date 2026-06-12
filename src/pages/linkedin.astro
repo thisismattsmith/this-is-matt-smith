@@ -10,13 +10,14 @@ import RootLayout from '@layouts/root-layout.astro';
 <html lang='en'>
 	<head>
 		<BaseHead
-			title={SITE_TITLE}
-			description={SITE_DESCRIPTION}
+			title={`Hello from LinkedIn — ${SITE_TITLE}`}
+			description="A landing page for people visiting from LinkedIn — what I do, a quick bio, and how to get in touch."
 			image='/images/ogimage.png'
+			noindex
 		/>
 	</head>
-
-	<RootLayout>
+	<body>
+		<RootLayout>
 		<div
 			id='navbar+title'
 			class='flex flex-col w-full gap-6 max-w-xl'>
@@ -120,4 +121,5 @@ import RootLayout from '@layouts/root-layout.astro';
 			</div>
 		</div>
 	</RootLayout>
+	</body>
 </html>

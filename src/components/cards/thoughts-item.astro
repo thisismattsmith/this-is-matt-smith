@@ -1,30 +1,36 @@
 ---
 import FormattedDate from '@components/misc/formatted-date.astro';
-import { clsx, getCategoryColor } from '@utils/index';
+import { clsx, getCategoryAccent } from '@utils/index';
 
-const { category, content, pubDate, index, slug } = Astro.props;
-
-
+const { category, content, pubDate, slug } = Astro.props;
+const accent = getCategoryAccent(category);
 ---
 
-<a href={`/thoughts/${slug}`}>
+<a href={`/thoughts/${slug}`} class='block'>
 	<article
 		id={category}
 		class={clsx(
-			'flex flex-col w-full items-center justify-between gap-3 p-6 relative transition-all duration-75 ease-in-out',
-			getCategoryColor(category), // set the background color based on category
-			index % 2 === 0 ? 'rotate-1 hover:rotate-0' : '-rotate-1 hover:-rotate-0' // rotate the card
+			// Subtle card; category colour shows up only on the small pill.
+			// No left border bar. Same hover behaviour as /work cards.
+			'flex flex-col items-start gap-3 w-full p-5 relative border border-gray-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900',
+			'transition-transform duration-200 ease-in-out transform hover:rotate-1 hover:border-black dark:hover:border-white hover:shadow-md'
 		)}>
-		<span class='absolute top-3 right-3 text-5xl text-gray-700'>"</span>
-		<h5 class='text-gray-900 dark:text-gray-900 w-full font-medium text-md'>
+		<p class='text-gray-500 dark:text-gray-400 text-sm font-medium'>
 			a thought about
-			<span class='underline decoration-wavy'>{category}</span>
-		</h5>
-		<h1
-			class='text-black dark:text-black font-medium w-full sm:text-xl md:text-2xl indent-9'>
+			<span
+				class={clsx(
+					'inline-block px-1.5 py-0.5 rounded font-medium',
+					accent.bg,
+					accent.text
+				)}>
+				{category}
+			</span>
+		</p>
+		<h3
+			class='text-gray-900 dark:text-gray-100 font-medium w-full text-lg md:text-xl tracking-tight'>
 			{content}
-		</h1>
-		<p class='text-black w-full text-end font-medium text-sm'>
+		</h3>
+		<p class='w-full text-end text-gray-500 dark:text-gray-500 text-xs font-medium'>
 			<FormattedDate date={pubDate} />
 		</p>
 	</article>

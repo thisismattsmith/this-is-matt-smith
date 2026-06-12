@@ -3,12 +3,20 @@ import type { CollectionEntry } from 'astro:content';
 import { Header } from '@components/misc';
 import FormattedDate from '@components/misc/formatted-date.astro';
 import { BaseHead } from '@components/seo';
+import { LinkedInCTA } from '@components/cta';
 import RootLayout from '@layouts/root-layout.astro';
 import { clsx } from '@utils/index';
 
-type Props = CollectionEntry<'thought'>['data'];
+type Props = CollectionEntry<'thought'>['data'] & { readingTime?: number };
 
-const { title, description, showTldr, pubDate, readingTime } = Astro.props;
+const {
+	title,
+	description,
+	showTldr,
+	pubDate,
+	readingTime,
+	linkedinLink,
+} = Astro.props;
 ---
 
 <html lang='en'>
@@ -17,71 +25,99 @@ const { title, description, showTldr, pubDate, readingTime } = Astro.props;
 			title={title}
 			description={description}
 			image='/images/ogimage.png'
+			type='article'
+			publishedTime={pubDate?.toISOString()}
 		/>
 	</head>
+	<body>
+		<RootLayout>
+			<div
+				id='navbar+title'
+				class='flex flex-col w-full gap-6 max-w-xl'>
+				<Header />
 
-	<RootLayout>
-		<div
-			id='navbar+title'
-			class='flex flex-col w-full gap-6 max-w-xl'>
-			<Header />
+				<article
+					id='blog-content'
+					class='w-full flex flex-col gap-6 items-center justify-center'>
+					<h1
+						class='w-full text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight'>
+						{title}
+					</h1>
+					<div class='flex flex-row gap-2 w-full'>
+						<p class='text-start text-gray-500 font-medium'>
+							<FormattedDate date={pubDate.toString()} />
+						</p>
+						{readingTime && (
+							<>
+								<span class='text-gray-500 font-medium'>·</span>
+								<p class='text-start text-gray-500 font-medium'>
+									{readingTime} min read
+								</p>
+							</>
+						)}
+					</div>
 
-			<article
-				id='blog-content'
-				class='w-full flex flex-col gap-6 items-center justify-center'>
-				<h1
-					class='w-full text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight'>
-					{title}
-				</h1>
-				<div class='flex flex-row gap-2 w-full'>
-					<p class='text-start text-gray-500 font-medium'>
-						<FormattedDate date={pubDate.toString()} />
+					{showTldr && (
+						<p
+							class='w-full text-start font-medium text-gray-700 dark:text-gray-300 text-lg leading-relaxed'>
+							<span class='font-semibold'>tl;dr: </span>
+							{description}
+						</p>
+					)}
+					<div
+						class={clsx(
+							'w-full prose prose-lg my-3 prose-p:font-medium dark:prose-invert prose-a:underline items-center justify-center',
+							'dark:prose-a:bg-lime-950 dark:prose-a:decoration-lime-400 dark:prose-a:underline prose-a:bg-lime-50 prose-a:decoration-lime-500',
+							'prose-h1:font-medium prose-h2:font-medium prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium',
+							'prose-h1:tracking-tight prose-h2:tracking-tight prose-h3:tracking-tight prose-h4:tracking-tight prose-h5:tracking-tight prose-h6:tracking-tight',
+							'prose-ul:font-medium prose-ol:font-medium prose-li:font-medium',
+							'prose-ul:space-y-3 prose-ol:space-y-3 prose-li:space-y-3'
+						)}>
+						<slot />
+					</div>
+
+					{/*
+						Sections below the post are separated by horizontal rules.
+						When there's no LinkedIn link, the CTA renders nothing and
+						its preceding <hr> would float on its own — so the CTA's
+						own HR is rendered conditionally and the LinkedInCTA
+						component handles its own internal layout.
+					*/}
+
+					{linkedinLink && (
+						<>
+							<hr class='w-full border-t border-gray-200 dark:border-neutral-800 my-0' />
+							<LinkedInCTA href={linkedinLink} />
+						</>
+					)}
+
+					<hr class='w-full border-t border-gray-200 dark:border-neutral-800 my-0' />
+
+					<p class='w-full text-start font-medium'>
+						<a href='/thoughts/' class='underline underline-offset-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'>
+							← more thoughts
+						</a>
 					</p>
-					<span class='text-gray-500 font-medium'>·</span>
-					<p class='text-start text-gray-500 font-medium'>
-						{readingTime} min read
-					</p>
-				</div>
 
-				{
-				showTldr && (
+					<hr class='w-full border-t border-gray-200 dark:border-neutral-800 my-0' />
+
 					<p
-						class='w-full text-start font-medium text-gray-700 dark:text-gray-300 text-lg leading-relaxed'>
-						<span class='font-semibold'>tl;dr: </span>
-						{description}
-					</p>
-				)
-				}
-				<div
-					class={clsx(
-						'w-full prose prose-lg my-3 prose-p:font-medium dark:prose-invert prose-a:underline  items-center justify-center',
-						'dark:prose-a:bg-lime-950 dark:prose-a:decoration-lime-400 dark:prose-a:underline prose-a:bg-lime-50 prose-a:decoration-lime-500',
-						'prose-h1:font-medium prose-h2:font-medium prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium',
-						'prose-h1:tracking-tight prose-h2:tracking-tight prose-h3:tracking-tight prose-h4:tracking-tight prose-h5:tracking-tight prose-h6:tracking-tight',
-						'prose-ul:font-medium prose-ol:font-medium prose-li:font-medium',
-						'prose-ul:space-y-3 prose-ol:space-y-3 prose-li:space-y-3'
-					)}>
-					<slot />
-					<br />
-					<a href="../thoughts/">← more thoughts</a>
-					
-				</div>
-				<p
 						class='w-full text-start font-medium text-gray-500 dark:text-gray-500 text-base leading-relaxed'>
-					"thoughts" are quickly written ideas, observations and opinions. they're rarely edited as they're just a way for me to get something out there easily - like social media posts. 
+						"thoughts" are quickly written ideas, observations and opinions. they're rarely edited as they're just a way for me to get something out there easily - like social media posts.
 					</p>
 					<p
 						class='w-full text-start font-medium text-gray-500 dark:text-gray-500 text-base leading-relaxed'>
-					so sometimes there will be mistakes. please let me know at 
-					<a href='mailto:hello@thisismattsmith.com' 
-					class= 'font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
-							hello@thisismattsmith.com</a> 
-						if you spot any. for my more polished work, check out my 
-						<a href='../writing/' 
-					class= 'font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+					so sometimes there will be mistakes. please let me know at
+					<a href='mailto:hello@thisismattsmith.com'
+						class='font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
+						hello@thisismattsmith.com</a>
+						if you spot any. for my more polished work, check out my
+						<a href='/writing/'
+						class='font-medium text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:underline underline-offset-2'>
 							writing</a>.
 					</p>
-			</article>
-		</div>
-	</RootLayout>
+				</article>
+			</div>
+		</RootLayout>
+	</body>
 </html>

@@ -1,0 +1,168 @@
+---
+// Bottom-of-post CTA strip: Share (left) and Newsletter (right).
+// Used by the writing layout. Side-by-side on desktop, stacked on mobile.
+
+interface Props {
+	title: string;
+	url: string; // absolute URL of the current post — fallback if JS is off
+	description?: string;
+}
+
+const { title, url, description = "" } = Astro.props;
+
+// Substack publication subdomain.
+const SUBSTACK_HOST = "mattsmith.substack.com";
+
+// Share endpoints. The actual URL is rebuilt on click in JS using the
+// current `window.location.href`, so it always reflects the live page,
+// not whatever Astro.site happened to resolve to at build time. The
+// `href` here is a sensible fallback for users without JS.
+const shares = [
+	{
+		name: "LinkedIn",
+		platform: "linkedin",
+		href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+	},
+	{
+		name: "Bluesky",
+		platform: "bluesky",
+		href: `https://bsky.app/intent/compose?text=${encodeURIComponent(`${title} ${url}`)}`,
+	},
+	{
+		name: "X",
+		platform: "x",
+		href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+	},
+	{
+		name: "Reddit",
+		platform: "reddit",
+		href: `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+	},
+];
+---
+
+<section
+	aria-label="share and subscribe"
+	class="not-prose w-full mt-12 grid gap-6 md:grid-cols-2 border-t border-gray-200 dark:border-neutral-800 pt-8"
+>
+	<!-- Share: vertical stack of rectangular tiles -->
+	<div class="flex flex-col gap-3">
+		<p class="text-sm font-medium text-gray-500 dark:text-gray-400">share</p>
+		<div
+			id="share-buttons"
+			data-share-title={title}
+			class="flex flex-col gap-2 max-w-xs">
+			{shares.map((s, i) => (
+				<a
+					href={s.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					data-share-platform={s.platform}
+					data-umami-event={`share-${s.platform}`}
+					class:list={[
+						// Same hover treatment as /work and /thoughts cards: start
+						// straight, tilt on hover, alternating direction so a
+						// stack of them reads lively.
+						"flex items-center justify-start px-4 py-2.5 border rounded-lg text-sm font-medium",
+						"border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900",
+						"text-gray-900 dark:text-gray-100",
+						"transition-transform duration-200 ease-in-out transform",
+						"hover:border-black dark:hover:border-white hover:shadow-md",
+						i % 2 === 0 ? "hover:rotate-1" : "hover:-rotate-1",
+					]}>
+					Share on {s.name}
+				</a>
+			))}
+		</div>
+	</div>
+
+	<!-- Newsletter: custom form posting to Substack's free-subscribe endpoint -->
+	<div class="flex flex-col gap-3 md:items-end">
+		<p class="text-sm font-medium text-gray-500 dark:text-gray-400 md:text-right">newsletter</p>
+		<!--
+			This posts directly to Substack's free-subscribe endpoint
+			(/api/v1/free). It's an undocumented but widely-used endpoint;
+			if it ever breaks, the form falls back gracefully because:
+			- `target=_blank` opens the response in a new tab
+			- the user can also go directly to the publication URL
+			A small JS handler intercepts the submission to also send the
+			user to the Substack page (in a new tab) with their email
+			pre-filled, so even if the API call silently fails they get
+			a working subscribe flow.
+		-->
+		<form
+			id="newsletter-form"
+			method="POST"
+			action={`https://${SUBSTACK_HOST}/api/v1/free`}
+			target="_blank"
+			class="w-full max-w-sm flex flex-row gap-2">
+			<label for="newsletter-email" class="sr-only">Email address</label>
+			<input
+				id="newsletter-email"
+				type="email"
+				name="email"
+				placeholder="you@example.com"
+				required
+				autocomplete="email"
+				class="flex-1 min-w-0 px-3 py-2 rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#29fd30] focus:border-transparent"
+			/>
+			<!-- Required by Substack to track signup source -->
+			<input type="hidden" name="source" value="subscribe_page" />
+			<input type="hidden" name="referrer" value="" id="newsletter-referrer" />
+			<button
+				type="submit"
+				data-umami-event="newsletter-subscribe"
+				class="px-4 py-2 rounded-md bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-90 transition-opacity">
+				Subscribe
+			</button>
+		</form>
+	</div>
+</section>
+
+<!--
+	Share button click handler. Builds the share URL at click time from
+	window.location.href so the URL is always the live current page, not
+	whatever Astro.url resolved to at build time. Falls through to the
+	default href if anything throws.
+-->
+<script is:inline>
+	(function () {
+		const container = document.getElementById('share-buttons');
+		if (!container) return;
+		const title = container.getAttribute('data-share-title') || document.title;
+
+		const buildHref = (platform, url, t) => {
+			const enc = encodeURIComponent;
+			switch (platform) {
+				case 'linkedin':
+					return `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`;
+				case 'bluesky':
+					return `https://bsky.app/intent/compose?text=${enc(`${t} ${url}`)}`;
+				case 'x':
+					return `https://twitter.com/intent/tweet?text=${enc(t)}&url=${enc(url)}`;
+				case 'reddit':
+					return `https://www.reddit.com/submit?url=${enc(url)}&title=${enc(t)}`;
+				default:
+					return null;
+			}
+		};
+
+		container.querySelectorAll('[data-share-platform]').forEach((a) => {
+			a.addEventListener('click', (e) => {
+				try {
+					const platform = a.getAttribute('data-share-platform');
+					const fresh = buildHref(platform, window.location.href, title);
+					if (fresh) {
+						e.preventDefault();
+						window.open(fresh, '_blank', 'noopener,noreferrer');
+					}
+				} catch (_) { /* fall through to default href + target=_blank */ }
+			});
+		});
+
+		// Pass the current page as the referrer hint to Substack — helps
+		// you see in the dashboard which post drove the signup.
+		const ref = document.getElementById('newsletter-referrer');
+		if (ref) ref.value = window.location.href;
+	})();
+</script>

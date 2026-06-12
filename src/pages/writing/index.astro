@@ -2,40 +2,262 @@
 import { WritingItem } from '@components/cards';
 import { Header } from '@components/misc';
 import { BaseHead } from '@components/seo';
-import { SITE_DESCRIPTION, SITE_TITLE } from '@data/index';
+import { SITE_DESCRIPTION, SITE_TITLE, writingElsewhere } from '@data/index';
 import { getCollection } from 'astro:content';
 import RootLayout from '@layouts/root-layout.astro';
+import { WRITING_CATEGORIES } from '../../content/config';
+import { clsx } from '@utils/index';
 
+// All posts, newest first. Filtering and pagination happen client-side
+// so the URL stays shareable (?category=&page=) without rebuilding the
+// list per route.
 const writing = (await getCollection('writing')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+
+const filters = [
+	{ slug: 'all', label: 'All' },
+	...WRITING_CATEGORIES.map((c) => ({ slug: c.slug, label: c.label })),
+];
+
+// Page size matches what was asked for. Bump in one place if it ever
+// needs to change; the JS reads this through a data attribute.
+const PAGE_SIZE = 20;
 ---
 
 <!doctype html>
 <html lang='en'>
 	<head>
 		<BaseHead
-			title={SITE_TITLE}
-			description={SITE_DESCRIPTION}
+			title={`Writing — ${SITE_TITLE}`}
+			description="Essays from Matt Smith on learning and development, growing up, AI, consulting, and the work he does."
 			image='/images/ogimage.png'
 		/>
 	</head>
-	<RootLayout>
-		<div
-			id='Header+title'
-			class='flex flex-col w-full gap-6 max-w-xl'>
-			<Header />
-			<h1 class='w-full text-7xl font-medium tracking-tight'>writing</h1>
+	<body>
+		<RootLayout>
+			<div
+				id='Header+title'
+				class='flex flex-col w-full gap-6 max-w-xl'>
+				<Header />
+				<h1 class='w-full text-7xl font-medium tracking-tight'>writing</h1>
 
-			{
-				writing.map((writing) => (
-					<WritingItem
-						title={writing.data.title}
-						date={writing.data.pubDate}
-						slug={writing.slug}
-					/>
-				))
-			}
-		</div>
-	</RootLayout>
+				<div
+					id='writing-filters'
+					role='tablist'
+					aria-label='Filter writing by category'
+					class='flex flex-row flex-wrap gap-2'>
+					{filters.map((f, i) => (
+						<a
+							href={f.slug === 'all' ? '/writing' : `/writing?category=${f.slug}`}
+							data-filter={f.slug}
+							role='tab'
+							class={clsx(
+								'inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border transition-transform duration-200 ease-in-out transform',
+								'border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-gray-300',
+								'hover:bg-gray-100 dark:hover:bg-neutral-800',
+								i % 2 === 0 ? 'hover:rotate-1' : 'hover:-rotate-1',
+								'aria-[selected=true]:bg-black aria-[selected=true]:text-white aria-[selected=true]:border-black',
+								'dark:aria-[selected=true]:bg-white dark:aria-[selected=true]:text-black dark:aria-[selected=true]:border-white'
+							)}>
+							{f.label}
+						</a>
+					))}
+				</div>
+
+				<div
+					id='writing-list'
+					data-page-size={PAGE_SIZE}
+					class='flex flex-col w-full gap-2'>
+					{
+						writing.map((post) => (
+							<div data-category={post.data.category}>
+								<WritingItem
+									title={post.data.title}
+									slug={post.slug}
+								/>
+							</div>
+						))
+					}
+					<p
+						id='writing-empty'
+						class='hidden text-gray-500 dark:text-gray-400 italic py-6'>
+						No posts in this category yet.
+					</p>
+				</div>
+
+				<!--
+					Pagination controls. Hidden by default; the script reveals
+					them when more than one page of results exists for the
+					active filter. Server-rendered so they're announceable to
+					screen readers even before JS runs.
+				-->
+				<nav
+					id='writing-pagination'
+					aria-label='Writing pagination'
+					class='hidden flex-row items-center justify-between gap-2 mt-2'>
+					<button
+						id='page-prev'
+						type='button'
+						class='inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-transform duration-200 ease-in-out transform hover:rotate-1'>
+						← Previous
+					</button>
+					<span
+						id='page-indicator'
+						class='text-sm font-medium text-gray-500 dark:text-gray-400'>
+						Page 1
+					</span>
+					<button
+						id='page-next'
+						type='button'
+						class='inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border border-gray-300 dark:border-neutral-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-transform duration-200 ease-in-out transform hover:-rotate-1'>
+						Next →
+					</button>
+				</nav>
+
+				<!-- Writing in other places -->
+				<section
+					id='writing-elsewhere'
+					aria-labelledby='writing-elsewhere-heading'
+					class='flex flex-col gap-3 w-full mt-12 pt-8 border-t border-gray-200 dark:border-neutral-800'>
+					<h2
+						id='writing-elsewhere-heading'
+						class='text-xl md:text-2xl font-medium tracking-tight'>
+						writing in other places
+					</h2>
+					<div class='flex flex-col gap-2'>
+						{writingElsewhere.map((item, i) => (
+							<a
+								href={item.url}
+								target='_blank'
+								rel='noopener noreferrer'
+								class:list={[
+									'block group p-4 border rounded-lg',
+									'border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900',
+									'transition-transform duration-200 ease-in-out transform',
+									'hover:border-black dark:hover:border-white hover:shadow-md',
+									i % 2 === 0 ? 'hover:rotate-1' : 'hover:-rotate-1',
+								]}>
+								<h3 class='text-base md:text-lg font-medium tracking-tight group-hover:underline underline-offset-4 decoration-orange-500'>
+									{item.name}
+								</h3>
+								<p class='text-sm text-gray-600 dark:text-gray-400 mt-1'>
+									{item.description}
+								</p>
+							</a>
+						))}
+					</div>
+				</section>
+			</div>
+
+			<script is:inline>
+				// Client-side filter + pagination. Reads ?category= and ?page=
+				// from the URL, applies the filter to the rendered list, then
+				// shows only the current page's slice. Updates both params
+				// without page reload via history.pushState.
+				(function () {
+					const list = document.getElementById('writing-list');
+					if (!list) return;
+
+					const PAGE_SIZE = parseInt(list.dataset.pageSize, 10) || 20;
+					const items = Array.from(list.querySelectorAll('[data-category]'));
+					const empty = document.getElementById('writing-empty');
+					const tabs = document.querySelectorAll('#writing-filters [data-filter]');
+
+					const pagination = document.getElementById('writing-pagination');
+					const prev = document.getElementById('page-prev');
+					const next = document.getElementById('page-next');
+					const indicator = document.getElementById('page-indicator');
+
+					function parseParams() {
+						const p = new URLSearchParams(window.location.search);
+						return {
+							category: p.get('category') || 'all',
+							page: Math.max(1, parseInt(p.get('page'), 10) || 1),
+						};
+					}
+
+					function setParams({ category, page }) {
+						const url = new URL(window.location.href);
+						if (category === 'all') url.searchParams.delete('category');
+						else url.searchParams.set('category', category);
+						if (page <= 1) url.searchParams.delete('page');
+						else url.searchParams.set('page', String(page));
+						window.history.pushState({}, '', url);
+					}
+
+					function apply() {
+						const { category, page } = parseParams();
+
+						// Filter pass.
+						const matching = items.filter(
+							(el) => category === 'all' || el.dataset.category === category
+						);
+
+						const totalPages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
+						// Clamp the page if the filter shrank the result set.
+						const safePage = Math.min(page, totalPages);
+						const start = (safePage - 1) * PAGE_SIZE;
+						const end = start + PAGE_SIZE;
+
+						items.forEach((el) => (el.style.display = 'none'));
+						matching.slice(start, end).forEach((el) => (el.style.display = ''));
+
+						if (empty) empty.style.display = matching.length === 0 ? 'block' : 'none';
+
+						tabs.forEach((t) => {
+							t.setAttribute(
+								'aria-selected',
+								t.dataset.filter === category ? 'true' : 'false'
+							);
+						});
+
+						// Pagination visibility & state.
+						if (totalPages > 1) {
+							pagination.classList.remove('hidden');
+							pagination.classList.add('flex');
+							indicator.textContent = `Page ${safePage} of ${totalPages}`;
+							prev.disabled = safePage <= 1;
+							next.disabled = safePage >= totalPages;
+						} else {
+							pagination.classList.add('hidden');
+							pagination.classList.remove('flex');
+						}
+
+						// If we clamped, sync the URL so it matches what's shown.
+						if (safePage !== page) setParams({ category, page: safePage });
+					}
+
+					apply();
+
+					tabs.forEach((tab) => {
+						tab.addEventListener('click', (e) => {
+							e.preventDefault();
+							// Switching category resets to page 1.
+							setParams({ category: tab.dataset.filter, page: 1 });
+							apply();
+						});
+					});
+
+					prev.addEventListener('click', () => {
+						const { category, page } = parseParams();
+						if (page > 1) {
+							setParams({ category, page: page - 1 });
+							apply();
+							window.scrollTo({ top: 0, behavior: 'smooth' });
+						}
+					});
+
+					next.addEventListener('click', () => {
+						const { category, page } = parseParams();
+						setParams({ category, page: page + 1 });
+						apply();
+						window.scrollTo({ top: 0, behavior: 'smooth' });
+					});
+
+					window.addEventListener('popstate', apply);
+				})();
+			</script>
+		</RootLayout>
+	</body>
 </html>

@@ -1,15 +1,10 @@
+---
+// Body wrapper. <head> lives in BaseHead which each page renders directly
+// inside its <html><head>. We previously duplicated <head> here, which
+// produced invalid markup (two <head> elements) and a wandering RSS link.
+---
 <div
 	id='root-container'
 	class='w-full flex flex-col items-center justify-start my-6 p-4 antialiased max-w-xl mx-auto'>
 	<slot />
 </div>
-
-<head>
-	<!-- Your existing head content -->
-	<link
-		rel='alternate'
-		type='application/rss+xml'
-		title='RSS Feed for thisismattsmith.com'
-		href='/rss.xml'
-	/>
-</head>

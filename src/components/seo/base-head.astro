@@ -1,209 +1,157 @@
 ---
 import 'src/styles/global.css';
 
-// all pages through the use of the <BaseHead /> component.
 interface Props {
 	title: string;
 	description: string;
 	image?: string;
+	type?: 'website' | 'article';
+	publishedTime?: string;
+	noindex?: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = '/images/ogimage.png' } = Astro.props;
+const {
+	title,
+	description,
+	image = '/images/ogimage.png',
+	type = 'website',
+	publishedTime,
+	noindex = false,
+} = Astro.props;
+
+const ogImageURL = new URL(image, Astro.url).toString();
+
+// JSON-LD for the Person/Website. Helps search engines connect this site
+// with the linked social profiles and surface a knowledge panel.
+// Use Astro.site as the single source of truth for canonical host. The
+// `?? '...'` fallback is just a defensive default if Astro.site is ever
+// undefined — it should always be set via astro.config.mjs.
+const siteUrl = Astro.site?.toString() ?? "https://thisismattsmith.com";
+
+const personLd = {
+	"@context": "https://schema.org",
+	"@type": "Person",
+	name: "Matt Smith",
+	url: siteUrl,
+	image: ogImageURL,
+	jobTitle: "Independent Consultant",
+	sameAs: [
+		"https://github.com/thisismattsmith",
+		"https://www.linkedin.com/in/thisismattsmith/",
+		"https://x.com/__mattsmith__",
+		"https://bsky.app/profile/thisismattsmith.com",
+	],
+};
+
+const articleLd =
+	type === "article"
+		? {
+				"@context": "https://schema.org",
+				"@type": "BlogPosting",
+				headline: title,
+				description,
+				image: ogImageURL,
+				datePublished: publishedTime,
+				author: {
+					"@type": "Person",
+					name: "Matt Smith",
+					url: siteUrl,
+				},
+				mainEntityOfPage: canonicalURL.toString(),
+			}
+		: null;
 ---
 
-<!-- Add this before other head content -->
+<!--
+	Theme preflight: runs before paint to avoid a flash of incorrect theme.
+	`is:inline` keeps it in the HTML and out of the JS bundle.
+-->
 <script is:inline>
 	const theme = (() => {
-		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-			return localStorage.getItem('theme') || 'light';
-		}
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'dark';
-		}
+		try {
+			if (localStorage.getItem('theme')) return localStorage.getItem('theme');
+		} catch (e) {}
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
 		return 'light';
 	})();
-
-	if (theme === 'dark') {
-		document.documentElement.classList.add('dark');
-	} else {
-		document.documentElement.classList.remove('dark');
-	}
+	if (theme === 'dark') document.documentElement.classList.add('dark');
 </script>
 
-<!-- 100% privacy-first analytics -->
+<!-- Privacy-first analytics -->
 <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 
-
-<link
-	rel='sitemap'
-	href='/sitemap-index.xml'
-/>
-
-<!-- Global Metadata -->
+<!-- Global metadata -->
 <meta charset='utf-8' />
-<meta
-	name='viewport'
-	content='width=device-width,initial-scale=1'
+<meta name='viewport' content='width=device-width,initial-scale=1' />
+<meta name='generator' content={Astro.generator} />
+
+<!-- Favicons (only the files that actually exist in /public) -->
+<link rel='icon' type='image/x-icon' href='/favicon.ico' sizes='any' />
+<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+<link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
+<link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
+<link rel='icon' type='image/png' sizes='192x192' href='/android-chrome-192x192.png' />
+<link rel='icon' type='image/png' sizes='512x512' href='/android-chrome-512x512.png' />
+<link rel='manifest' href='/manifest.json' />
+<meta name='theme-color' content='#ffffff' />
+
+<!-- Font preload: the regular weight is what loads on every page. -->
+<link
+	rel='preload'
+	href='/fonts/uncut/woff2/UncutSans-Regular.woff2'
+	as='font'
+	type='font/woff2'
+	crossorigin
+/>
+<link
+	rel='preload'
+	href='/fonts/uncut/woff2/UncutSans-Medium.woff2'
+	as='font'
+	type='font/woff2'
+	crossorigin
 />
 
-<!-- Favicons -->
-<link
-	rel='apple-touch-icon'
-	sizes='57x57'
-	href='/apple-icon-57x57.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='60x60'
-	href='/apple-icon-60x60.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='72x72'
-	href='/apple-icon-72x72.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='76x76'
-	href='/apple-icon-76x76.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='114x114'
-	href='/apple-icon-114x114.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='120x120'
-	href='/apple-icon-120x120.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='144x144'
-	href='/apple-icon-144x144.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='152x152'
-	href='/apple-icon-152x152.png'
-/>
-<link
-	rel='apple-touch-icon'
-	sizes='180x180'
-	href='/apple-icon-180x180.png'
-/>
-<link
-	rel='icon'
-	type='image/png'
-	sizes='192x192'
-	href='/android-icon-192x192.png'
-/>
-<link
-	rel='icon'
-	type='image/png'
-	sizes='32x32'
-	href='/favicon-32x32.png'
-/>
-<link
-	rel='icon'
-	type='image/png'
-	sizes='96x96'
-	href='/favicon-96x96.png'
-/>
-<link
-	rel='icon'
-	type='image/png'
-	sizes='16x16'
-	href='/favicon-16x16.png'
-/>
-<link
-	rel='manifest'
-	href='/manifest.json'
-/>
-<meta
-	name='msapplication-TileColor'
-	content='#ffffff'
-/>
-<meta
-	name='msapplication-TileImage'
-	content='/ms-icon-144x144.png'
-/>
-<meta
-	name='theme-color'
-	content='#ffffff'
-/>
+<!-- Canonical -->
+<link rel='canonical' href={canonicalURL} />
 
-<meta
-	name='generator'
-	content={Astro.generator}
-/>
+{noindex && (
+	<meta name='robots' content='noindex, follow' />
+)}
 
-<!-- Canonical URL -->
-<link
-	rel='canonical'
-	href={canonicalURL}
-/>
-
-<!-- Primary Meta Tags -->
+<!-- Primary meta -->
 <title>{title}</title>
-<meta
-	name='title'
-	content={title}
-/>
-<meta
-	name='description'
-	content={description}
-/>
+<meta name='title' content={title} />
+<meta name='description' content={description} />
+<meta name='author' content='Matt Smith' />
 
-<!-- Open Graph / Facebook -->
-<meta
-	property='og:type'
-	content='website'
-/>
-<meta
-	property='og:url'
-	content={Astro.url}
-/>
-<meta
-	property='og:title'
-	content={title}
-/>
-<meta
-	property='og:description'
-	content={description}
-/>
-<meta
-	property='og:image'
-	content={new URL(image, Astro.url)}
-/>
+<!-- Open Graph -->
+<meta property='og:type' content={type} />
+<meta property='og:site_name' content='thisismattsmith.com' />
+<meta property='og:url' content={Astro.url} />
+<meta property='og:title' content={title} />
+<meta property='og:description' content={description} />
+<meta property='og:image' content={ogImageURL} />
+{publishedTime && type === 'article' && (
+	<meta property='article:published_time' content={publishedTime} />
+)}
 
-<!-- Twitter -->
-<meta
-	property='twitter:card'
-	content='summary_large_image'
-/>
-<meta
-	property='twitter:url'
-	content={Astro.url}
-/>
-<meta
-	property='twitter:title'
-	content={title}
-/>
-<meta
-	property='twitter:description'
-	content={description}
-/>
-<meta
-	property='twitter:image'
-	content={new URL(image, Astro.url)}
-/>
+<!-- Twitter / X -->
+<meta name='twitter:card' content='summary_large_image' />
+<meta name='twitter:site' content='@__mattsmith__' />
+<meta name='twitter:creator' content='@__mattsmith__' />
+<meta name='twitter:url' content={Astro.url} />
+<meta name='twitter:title' content={title} />
+<meta name='twitter:description' content={description} />
+<meta name='twitter:image' content={ogImageURL} />
 
-<link
-	rel='alternate'
-	type='application/rss+xml'
-	title={`${title} RSS Feed`}
-	href='/rss.xml'
-/>
+<!-- Feed + sitemap discovery -->
+<link rel='alternate' type='application/rss+xml' title={`${title} RSS Feed`} href='/rss.xml' />
+<link rel='sitemap' href='/sitemap-index.xml' />
+
+<!-- Structured data -->
+<script type='application/ld+json' set:html={JSON.stringify(personLd)} />
+{articleLd && (
+	<script type='application/ld+json' set:html={JSON.stringify(articleLd)} />
+)}

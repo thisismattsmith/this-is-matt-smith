@@ -15,12 +15,13 @@ const work = (await getCollection('work')
 <html lang='en'>
 	<head>
 		<BaseHead
-			title={SITE_TITLE}
-			description={SITE_DESCRIPTION}
+			title={`Work — ${SITE_TITLE}`}
+			description="Independent consulting work from Matt Smith: organisational learning strategy, fractional CLO, L&D capability building, and learning experience design."
 			image='/images/ogimage.png'
 		/>
 	</head>
-	<RootLayout>
+	<body>
+		<RootLayout>
 		<div
 			id='Header+title'
 			class='flex flex-col w-full gap-6 max-w-xl'>
@@ -62,4 +63,5 @@ const work = (await getCollection('work')
 		</div>
 		
 	</RootLayout>
+	</body>
 </html>

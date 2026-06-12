@@ -5,16 +5,19 @@ import { type CollectionEntry, getCollection } from 'astro:content';
 import { getReadingTime } from '@utils/index';
 import ExternalLink from "../../components/misc/ExternalLink.astro";
 
-const posts = await getCollection('writing');
-type Props = CollectionEntry<'writing'>;
+// Required for static output: enumerate every post as a build-time route.
+export async function getStaticPaths() {
+	const posts = await getCollection('writing');
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
 
-const { slug } = Astro.params;
-const post = posts.find((page) => page.slug === slug);
+type Props = { post: CollectionEntry<'writing'> };
 
-if (!post) return Astro.redirect('/404');
-
+const { post } = Astro.props;
 const { Content } = await post.render();
-
 const readingTime = getReadingTime(post.body);
 ---
 
@@ -22,4 +25,3 @@ const readingTime = getReadingTime(post.body);
 	<Content components={{ a: ExternalLink }} />
 	<ScrollProgress />
 </WritingLayout>
-

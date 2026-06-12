@@ -15,12 +15,13 @@ const thoughts = (await getCollection("thought")).sort(
 <html lang='en'>
 	<head>
 		<BaseHead
-			title={SITE_TITLE}
-			description={SITE_DESCRIPTION}
+			title={`Thoughts — ${SITE_TITLE}`}
+			description="Short, quickly-written ideas, observations and opinions from Matt Smith on learning, work, AI, consulting and growing up."
 			image='/images/ogimage.png'
 		/>
 	</head>
-	<RootLayout>
+	<body>
+		<RootLayout>
 		<div
 			id='navbar+title'
 			class='flex flex-col w-full gap-6 max-w-xl'>
@@ -57,4 +58,5 @@ const thoughts = (await getCollection("thought")).sort(
 		</div>
 		
 	</RootLayout>
+	</body>
 </html>
